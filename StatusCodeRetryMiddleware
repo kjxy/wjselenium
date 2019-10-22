@@ -24,13 +24,13 @@ class StatusCodeRetryMiddleware(object):
     def process_response(self, request, response, spider):
         if request.meta.get('dont_retry', False):
             return response
-        if response.status in self.retry_http_codes:
+        if response.status in self.retry_http_codes: # setting文件加了
             reason = response_status_message(response.status)
             import importlib
-            settings = importlib.import_module('robot.settings').ABuYun
-            proxy = AbuYunProxyMiddleware(settings=settings)
-            print('使用 AbuYun 代理')
-            request.meta['proxy'] = proxy.proxy_server
+            settings = importlib.import_module('settings')
+            proxy = ProxyMiddleware(settings=settings)
+            print('使用  代理')
+            request.meta['proxy'] = proxy.proxy_server # 设置代理
             request.headers['Proxy-Authorization'] = proxy.proxy_authorization
             return self._retry(request, reason, spider) or response
         return response
